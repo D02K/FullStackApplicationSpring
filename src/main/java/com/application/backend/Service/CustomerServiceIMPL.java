@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.application.backend.CustomerRepo.CustomerRepo;
 import com.application.backend.DTO.CustomerDTO;
 import com.application.backend.DTO.CustomerSaveDTO;
+import com.application.backend.DTO.CustomerUpdateDTO;
 import com.application.backend.Entity.Customer;
 
 @Service
@@ -32,12 +33,13 @@ public class CustomerServiceIMPL implements CustomerService {
 	}
 
 	@Override
-	public List<CustomerDTO> getAllCustomer() {
+	public List<CustomerDTO>getAllCustomer() {
 		
 		List<Customer> getCustomers = customerRepo.findAll();
 		List<CustomerDTO> customerDTOList = new ArrayList<>();
 		
-		for(Customer a:getCustomers) {
+		for(Customer a:getCustomers) 
+		{
 			CustomerDTO customerDTO = new CustomerDTO(
 			a.getCustomerid(),
 			a.getCustomername(),
@@ -47,6 +49,35 @@ public class CustomerServiceIMPL implements CustomerService {
 			customerDTOList.add(customerDTO);
 		}
 		return customerDTOList;
+	}
+
+	@Override
+	public String updateCustomer(CustomerUpdateDTO customerUpdateDTO) {
+		
+		if(customerRepo.existsById(customerUpdateDTO.getCustomerid())) {
+			Customer customer = customerRepo.getById(customerUpdateDTO.getCustomerid());
+			
+			customer.setCustomername(customerUpdateDTO.getCustomername());
+			customer.setCustomeraddress(customerUpdateDTO.getCustomeraddress());
+			customer.setMobile(customerUpdateDTO.getMobile());
+			customerRepo.save(customer);
+			
+		}else {
+			System.out.println("Customer Id does not exist");
+		}
+		return null;
+	}
+
+	@Override
+	public boolean deleteCustomer(int id) {
+		
+		if(customerRepo.existsById(id)) {
+			customerRepo.deleteById(id);
+		}else {
+			System.out.println("Customer id not found");
+		}
+		
+		return true;
 	}
 
 }
